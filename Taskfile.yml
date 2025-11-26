@@ -6,6 +6,10 @@ tasks:
     cmds:
       - mkdir -p dist
       - go build -o dist/bladerunner ./cmd/bladerunner
+  lint:
+    desc: Run linters
+    cmds:
+      - golangci-lint run -v ./...
   clean:
     desc: Clean the binary
     cmds:
