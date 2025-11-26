@@ -1,0 +1,29 @@
+version: '3'
+
+tasks:
+  build:
+    desc: Build the binary
+    cmds:
+      - mkdir -p dist
+      - go build -o dist/bladerunner ./cmd/bladerunner
+  lint:
+    desc: Run linters
+    cmds:
+      - golangci-lint run -v ./...
+  clean:
+    desc: Clean the binary
+    cmds:
+      - rm -rf dist
+  docker-build:
+    desc: Build the Docker image
+    cmds:
+      - docker build -t bladerunner .
+  docker-build-runner:
+    desc: Build the Docker image for the runner
+    cmds:
+      - docker build -t bladerunner-runner -f Dockerfile.runner . 
+  docker-run-runner:
+    desc: Run the Docker image for the runner
+    cmds:
+      - docker run -it --rm -e GITHUB_TOKEN=$GITHUB_TOKEN -e RUNNER_OWNER=skevetter -e RUNNER_REPO=bladerunner -e RUNNER_NAME=runner-1 -e RUNNER_LABELS=bladerunner --name bladerunner-runner bladerunner-runner
+

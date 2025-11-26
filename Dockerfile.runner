@@ -1,0 +1,47 @@
+FROM golang:1.25-alpine AS builder
+
+WORKDIR /app
+COPY . .
+RUN go build -o bladerunner ./cmd/bladerunner
+
+FROM ubuntu:22.04
+
+# Arguments for runner version
+ARG RUNNER_VERSION="2.311.0"
+ARG RUNNER_ARCH="x64"
+
+# Install runner dependencies and tools
+RUN apt-get update && apt-get install -y \
+    curl \
+    git \
+    jq \
+    sudo \
+    libicu-dev \
+    docker.io \
+    tar \
+    && rm -rf /var/lib/apt/lists/*
+
+# Create runner user
+RUN useradd -m runner && \
+    usermod -aG sudo runner && \
+    usermod -aG docker runner && \
+    echo "%sudo ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+
+WORKDIR /actions-runner
+
+# Download and extract runner binary during build
+RUN curl -o actions-runner-linux-${RUNNER_ARCH}-${RUNNER_VERSION}.tar.gz -L https://github.com/actions/runner/releases/download/v${RUNNER_VERSION}/actions-runner-linux-${RUNNER_ARCH}-${RUNNER_VERSION}.tar.gz && \
+    tar xzf ./actions-runner-linux-${RUNNER_ARCH}-${RUNNER_VERSION}.tar.gz && \
+    rm actions-runner-linux-${RUNNER_ARCH}-${RUNNER_VERSION}.tar.gz && \
+    ./bin/installdependencies.sh
+
+# Copy bladerunner binary
+COPY --from=builder /app/bladerunner /usr/local/bin/bladerunner
+
+# Set permissions
+RUN chown -R runner:runner /actions-runner
+
+USER runner
+
+# Entrypoint
+ENTRYPOINT ["bladerunner", "runner", "start"]
