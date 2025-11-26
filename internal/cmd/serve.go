@@ -4,6 +4,7 @@ import (
 	"github.com/pocketbase/pocketbase"
 	"github.com/pocketbase/pocketbase/core"
 	"github.com/sirupsen/logrus"
+	"github.com/skevetter/bladerunner/internal/store"
 	"github.com/spf13/cobra"
 )
 
@@ -18,7 +19,11 @@ var serveCmd = &cobra.Command{
 
 		app.OnServe().BindFunc(func(e *core.ServeEvent) error {
 			logrus.Info("PocketBase server initialized")
-			// Placeholder for custom initialization logic
+
+			if err := store.EnsureCollections(app); err != nil {
+				logrus.WithError(err).Fatal("Failed to ensure collections")
+			}
+
 			return nil
 		})
 
