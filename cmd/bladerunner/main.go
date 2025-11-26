@@ -1,7 +1,7 @@
 package main
 
 import (
-	"github.com/ocean_trader/bladerunner/internal/cmd"
+	"github.com/skevetter/bladerunner/internal/cmd"
 )
 
 func main() {

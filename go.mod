@@ -1,4 +1,4 @@
-module github.com/ocean_trader/bladerunner
+module github.com/skevetter/bladerunner
 
 go 1.25.4
 
