@@ -1,21 +1,9 @@
 package main
 
 import (
-	"log"
-
-	"github.com/pocketbase/pocketbase"
-	"github.com/pocketbase/pocketbase/core"
+	"github.com/ocean_trader/bladerunner/internal/cmd"
 )
 
 func main() {
-	app := pocketbase.New()
-
-	app.OnServe().BindFunc(func(e *core.ServeEvent) error {
-		// Placeholder for custom initialization logic
-		return nil
-	})
-
-	if err := app.Start(); err != nil {
-		log.Fatal(err)
-	}
+	cmd.Execute()
 }
